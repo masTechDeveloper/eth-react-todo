@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
-import { TODO_ABI, TODO_ADDRESS } from './config/config';
+import Navbar from './components/layout/Navbar';
+import { TODO_LIST_ABI, TODO_LIST_ADDRESS } from './config/config';
 import './App.css';
 
 class App extends Component {
@@ -32,10 +33,17 @@ class App extends Component {
     console.log('Single Account: ', acc);
 
     // Interact with smart contract using ABI & Contract Address
-    const todo = new web3.eth.Contract(TODO_ABI, TODO_ADDRESS);
+    const todoList = new web3.eth.Contract(TODO_LIST_ABI, TODO_LIST_ADDRESS);
+    this.setState({ todoList });
+    console.log('TODO List ', todoList);
 
-    this.setState({ todo });
-    console.log('TODO List ', todo);
+    // Smart Contract Function Call
+    const countTask = await todoList.methods.taskCount().call();
+
+    console.log('Count Task: ', countTask);
+
+    // Update State Count Task
+    this.setState({ countTask });
 
     // Set Account State
     this.setState({ account: acc });
@@ -43,20 +51,35 @@ class App extends Component {
   }
 
   // Constructor to Manage a State
-
   constructor(props) {
     super(props);
-    this.state = { account: '', netw: '' };
+    this.state = {
+      account: '',
+      netw: '',
+      countTask: 0,
+    };
   }
 
   render() {
     return (
-      <div className='container'>
-        <h1>Corecis</h1>
+      <div className=''>
+        <Navbar />
+        <div className='container'>
+          <h1 className='text-center mt-5'>Add Task</h1>
 
-        {/* Get Account into web3 and update a state then show on page */}
-        <p>Your Account : {this.state.account}</p>
-        <p>You Connected On : {this.state.netw.toLocaleUpperCase()}</p>
+          <div className='row'>
+            <div className='col-6'>
+              <h1 className=''> Account Details</h1>
+              <p>
+                Your Account :{' '}
+                <span className='text-danger'>{this.state.account}</span>
+              </p>
+              <p>Network : {this.state.netw.toLocaleUpperCase()} </p>
+              <p>Task Count : {this.state.countTask}</p>
+            </div>
+            <div className='col-6'></div>
+          </div>
+        </div>
       </div>
     );
   }
