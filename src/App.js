@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
 import Navbar from './components/layout/Navbar';
+import TodoList from './components/TodoList';
 import { TODO_LIST_ABI, TODO_LIST_ADDRESS } from './config/config';
 import './App.css';
 
@@ -22,6 +23,7 @@ class App extends Component {
 
     // Find a Network ID
     const networkId = await web3.eth.net.getId();
+    this.setState({ netwId: networkId });
     console.log('Network Id is : ', networkId);
 
     // Get Return Accounts Array
@@ -55,8 +57,9 @@ class App extends Component {
       // set state array
       this.setState({ tasks: [...this.state.tasks, task] });
     }
-
     console.log('Task: ', this.state.tasks);
+
+    this.setState({ loading: false });
   }
 
   // Constructor to Manage a State
@@ -65,52 +68,58 @@ class App extends Component {
     this.state = {
       account: '',
       netw: '',
+      netwId: '',
       countTask: 0,
       tasks: [],
+      loading: true,
     };
+
+    this.createTask = this.createTask.bind(this);
+  }
+
+  createTask(content) {
+    this.setState({ loading: true });
+    this.state.todoList.methods
+      .createTask(content)
+      .send({ from: this.state.account })
+      .once('receipt', (receipt) => {
+        this.setState({ loading: false });
+      });
   }
 
   render() {
     return (
       <div className=''>
         <Navbar />
-        <div className='container'>
-          <h1 className='text-center mt-5'>Add Task</h1>
 
+        <div className='container my-5'>
           <div className='row'>
+            <main
+              role='main'
+              className='col-lg-12 d-flex justify-content-center'
+            ></main>
             <div className='col-6'>
-              <h1 className=''> Account Details</h1>
+              <h2 className=''> Account Details</h2>
               <p>
                 Your Account :{' '}
                 <span className='text-danger'>{this.state.account}</span>
               </p>
               <p>Network : {this.state.netw.toLocaleUpperCase()} </p>
-              <p>Task Count : {this.state.countTask}</p>
+              <p>Network Id : {this.state.netwId}</p>
+              <p>Total Task : {this.state.countTask}</p>
             </div>
             <div className='col-6'>
-              <form>
-                <input
-                  id='newTask'
-                  type='text'
-                  className='form-control'
-                  placeholder='Add task...'
-                  required
+              {this.state.loading ? (
+                <div id='loader' className='text-center'>
+                  <p className='text-center'>Loading...</p>
+                </div>
+              ) : (
+                <TodoList
+                  tasks={this.state.tasks}
+                  createTask={this.createTask}
+                  // toggleCompleted={this.toggleCompleted}
                 />
-                <input type='submit' />
-              </form>
-              <ul id='taskList' className='list-unstyled'>
-                {this.state.tasks.map((task, key) => {
-                  return (
-                    <div className='taskTemplate'>
-                      <label>
-                        <input type='checkbox' />
-                        <span className='content'>{task.content}</span>
-                      </label>
-                    </div>
-                  );
-                })}
-              </ul>
-              <ul id='completedTaskList' className='list-unstyled'></ul>
+              )}
             </div>
           </div>
         </div>
