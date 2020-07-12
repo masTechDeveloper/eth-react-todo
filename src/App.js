@@ -18,6 +18,7 @@ class App extends Component {
     // Find a Netwrok Type
     const networkType = await web3.eth.net.getNetworkType();
     console.log('Network Type is : ', networkType);
+    this.setState({ netw: networkType });
 
     // Find a Network ID
     const networkId = await web3.eth.net.getId();
@@ -31,6 +32,7 @@ class App extends Component {
     // Get a Single Account
     const acc = await web3.eth.getCoinbase();
     console.log('Single Account: ', acc);
+    this.setState({ account: acc });
 
     // Interact with smart contract using ABI & Contract Address
     const todoList = new web3.eth.Contract(TODO_LIST_ABI, TODO_LIST_ADDRESS);
@@ -39,15 +41,22 @@ class App extends Component {
 
     // Smart Contract Function Call
     const countTask = await todoList.methods.taskCount().call();
-
     console.log('Count Task: ', countTask);
 
     // Update State Count Task
     this.setState({ countTask });
 
-    // Set Account State
-    this.setState({ account: acc });
-    this.setState({ netw: networkType });
+    // Task Mapping Call to the Blockchain
+
+    for (var i = 1; i <= countTask; i++) {
+      //Call Mapping
+      const task = await todoList.methods.tasks(i).call();
+
+      // set state array
+      this.setState({ tasks: [...this.state.tasks, task] });
+    }
+
+    console.log('Task: ', this.state.tasks);
   }
 
   // Constructor to Manage a State
@@ -57,6 +66,7 @@ class App extends Component {
       account: '',
       netw: '',
       countTask: 0,
+      tasks: [],
     };
   }
 
@@ -77,7 +87,31 @@ class App extends Component {
               <p>Network : {this.state.netw.toLocaleUpperCase()} </p>
               <p>Task Count : {this.state.countTask}</p>
             </div>
-            <div className='col-6'></div>
+            <div className='col-6'>
+              <form>
+                <input
+                  id='newTask'
+                  type='text'
+                  className='form-control'
+                  placeholder='Add task...'
+                  required
+                />
+                <input type='submit' />
+              </form>
+              <ul id='taskList' className='list-unstyled'>
+                {this.state.tasks.map((task, key) => {
+                  return (
+                    <div className='taskTemplate'>
+                      <label>
+                        <input type='checkbox' />
+                        <span className='content'>{task.content}</span>
+                      </label>
+                    </div>
+                  );
+                })}
+              </ul>
+              <ul id='completedTaskList' className='list-unstyled'></ul>
+            </div>
           </div>
         </div>
       </div>
