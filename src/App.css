@@ -7,3 +7,9 @@
   color: grey;
   text-decoration: line-through;
 }
+
+@media screen and (max-width: 768px) {
+  .acc {
+    font-size: 10px;
+  }
+}
