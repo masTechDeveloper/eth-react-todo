@@ -23,10 +23,10 @@ class TodoList extends Component {
         <ul id='taskList' className='list-unstyled'>
           {this.props.tasks.map((task, key) => {
             return (
-              <div className='taskTemplate' className='checkbox' key={key}>
+              <div className='taskTemplate ' key={key}>
                 <label>
-                  <input type='checkbox' />
-                  <span className='content'>{task.content}</span>
+                  <input type='checkbox' className='checkbox mr-2 ' />
+                  <label className='content'>{task.content}</label>
                 </label>
               </div>
             );
