@@ -28,13 +28,13 @@ class App extends Component {
 
     // Get Return Accounts Array
 
-    // const accounts = await web3.eth.getAccounts();
+    const acc = await web3.eth.getAccounts();
     // console.log('Account : ', accounts);
 
     // Get a Single Account
-    const acc = await web3.eth.getCoinbase();
+    // const acc = await web3.eth.getCoinbase();
     // console.log('Single Account: ', acc);
-    this.setState({ account: acc });
+    this.setState({ account: acc[0] });
 
     // Interact with smart contract using ABI & Contract Address
     const todoList = new web3.eth.Contract(TODO_LIST_ABI, TODO_LIST_ADDRESS);
