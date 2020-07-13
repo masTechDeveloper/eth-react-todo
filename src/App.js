@@ -104,9 +104,11 @@ class App extends Component {
         <Navbar />
 
         <div className='container my-2'>
+          {/* Alert Msg */}
           <div class='alert alert-danger' role='alert'>
             Please Connect a Ropsten Network
           </div>
+
           <div className='row'>
             <main
               role='main'
@@ -116,9 +118,15 @@ class App extends Component {
               <h2 className=''> Account Details</h2>
               <p>
                 Your Account :
-                <span className='text-danger acc'>{this.state.account}</span>
+                <span className='text-success acc'>{this.state.account}</span>
               </p>
-              <p>Network : {this.state.netw.toLocaleUpperCase()} </p>
+              <p>
+                Network :{' '}
+                <span className='text-success'>
+                  {' '}
+                  {this.state.netw.toUpperCase()}{' '}
+                </span>{' '}
+              </p>
               <p>Network Id : {this.state.netwId}</p>
               <p>Total Task : {this.state.countTask}</p>
             </div>
