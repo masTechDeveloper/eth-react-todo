@@ -103,26 +103,31 @@ class App extends Component {
       <div className=''>
         <Navbar />
 
-        <div className='container my-5'>
+        <div className='container my-2'>
+          <div class='alert alert-danger' role='alert'>
+            Please Connect a Ropsten Network
+          </div>
           <div className='row'>
             <main
               role='main'
               className='col-lg-12 d-flex justify-content-center'
             ></main>
-            <div className='col-6'>
+            <div className='col-lg-6 col-md-6 col-sm-12 col-12'>
               <h2 className=''> Account Details</h2>
               <p>
-                Your Account :{' '}
-                <span className='text-danger'>{this.state.account}</span>
+                Your Account :
+                <span className='text-danger acc'>{this.state.account}</span>
               </p>
               <p>Network : {this.state.netw.toLocaleUpperCase()} </p>
               <p>Network Id : {this.state.netwId}</p>
               <p>Total Task : {this.state.countTask}</p>
             </div>
-            <div className='col-6'>
+            <div className='col-lg-6 col-md-6 col-sm-12 col-12'>
               {this.state.loading ? (
                 <div id='loader' className='text-center'>
-                  <p className='text-center'>Loading...</p>
+                  <p className='text-center text-danger font-weight-bold'>
+                    Loading...
+                  </p>
                 </div>
               ) : (
                 <TodoList
