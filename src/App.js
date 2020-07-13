@@ -105,7 +105,7 @@ class App extends Component {
 
         <div className='container my-2'>
           {/* Alert Msg */}
-          <div class='alert alert-danger' role='alert'>
+          <div className='alert alert-danger' role='alert'>
             Please Connect a Ropsten Network
           </div>
 
