@@ -18,13 +18,13 @@ class App extends Component {
 
     // Find a Netwrok Type
     const networkType = await web3.eth.net.getNetworkType();
-    console.log('Network Type is : ', networkType);
+    // console.log('Network Type is : ', networkType);
     this.setState({ netw: networkType });
 
     // Find a Network ID
     const networkId = await web3.eth.net.getId();
     this.setState({ netwId: networkId });
-    console.log('Network Id is : ', networkId);
+    // console.log('Network Id is : ', networkId);
 
     // Get Return Accounts Array
 
@@ -33,17 +33,17 @@ class App extends Component {
 
     // Get a Single Account
     const acc = await web3.eth.getCoinbase();
-    console.log('Single Account: ', acc);
+    // console.log('Single Account: ', acc);
     this.setState({ account: acc });
 
     // Interact with smart contract using ABI & Contract Address
     const todoList = new web3.eth.Contract(TODO_LIST_ABI, TODO_LIST_ADDRESS);
     this.setState({ todoList });
-    console.log('TODO List ', todoList);
+    // console.log('TODO List ', todoList);
 
     // Smart Contract Function Call
     const countTask = await todoList.methods.taskCount().call();
-    console.log('Count Task: ', countTask);
+    // console.log('Count Task: ', countTask);
 
     // Update State Count Task
     this.setState({ countTask });
@@ -57,7 +57,7 @@ class App extends Component {
       // set state array
       this.setState({ tasks: [...this.state.tasks, task] });
     }
-    console.log('Task: ', this.state.tasks);
+    // console.log('Task: ', this.state.tasks);
 
     this.setState({ loading: false });
   }
@@ -75,12 +75,23 @@ class App extends Component {
     };
 
     this.createTask = this.createTask.bind(this);
+    this.toggleCompleted = this.toggleCompleted.bind(this);
   }
 
   createTask(content) {
     this.setState({ loading: true });
     this.state.todoList.methods
       .createTask(content)
+      .send({ from: this.state.account })
+      .once('receipt', (receipt) => {
+        this.setState({ loading: false });
+      });
+  }
+
+  toggleCompleted(taskId) {
+    this.setState({ loading: true });
+    this.state.todoList.methods
+      .toggleCompleted(taskId)
       .send({ from: this.state.account })
       .once('receipt', (receipt) => {
         this.setState({ loading: false });
@@ -117,7 +128,7 @@ class App extends Component {
                 <TodoList
                   tasks={this.state.tasks}
                   createTask={this.createTask}
-                  // toggleCompleted={this.toggleCompleted}
+                  toggleCompleted={this.toggleCompleted}
                 />
               )}
             </div>
