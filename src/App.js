@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Web3 from 'web3';
 import Navbar from './components/layout/Navbar';
+import Footer from './components/layout/Footer';
 import TodoList from './components/TodoList';
 import { TODO_LIST_ABI, TODO_LIST_ADDRESS } from './config/config';
 import './App.css';
@@ -15,6 +16,9 @@ class App extends Component {
   async loadBlockchain() {
     // Connect a network Provider
     const web3 = new Web3(Web3.givenProvider || 'http://localhost:8545');
+
+    // await for Popup Metamask Window
+    await Web3.givenProvider.enable();
 
     // Find a Netwrok Type
     const networkType = await web3.eth.net.getNetworkType();
@@ -35,6 +39,14 @@ class App extends Component {
     // const acc = await web3.eth.getCoinbase();
     // console.log('Single Account: ', acc);
     this.setState({ account: acc[0] });
+
+    // Get Account Balance
+    const balance = await web3.eth.getBalance(acc[0]);
+
+    // Conver Wei to Eth
+    const convToEth = await web3.utils.fromWei(balance, 'ether');
+    this.setState({ balance: convToEth });
+    // console.log(convToEth + ' ETH');
 
     // Interact with smart contract using ABI & Contract Address
     const todoList = new web3.eth.Contract(TODO_LIST_ABI, TODO_LIST_ADDRESS);
@@ -67,11 +79,13 @@ class App extends Component {
     super(props);
     this.state = {
       account: '',
+      balance: '',
       netw: '',
       netwId: '',
       countTask: 0,
       tasks: [],
       loading: true,
+      // alert: false,
     };
 
     this.createTask = this.createTask.bind(this);
@@ -104,10 +118,15 @@ class App extends Component {
         <Navbar />
 
         <div className='container my-2'>
-          {/* Alert Msg */}
-          <div className='alert alert-danger' role='alert'>
-            Please Connect a Ropsten Network
-          </div>
+          {this.state.loading ? (
+            <div className='alert alert-danger' role='alert'>
+              Please Connect a Ropsten Network
+            </div>
+          ) : (
+            <div className='alert alert-success' role='alert'>
+              Connected Successfully!
+            </div>
+          )}
 
           <div className='row'>
             <main
@@ -118,14 +137,17 @@ class App extends Component {
               <h2 className=''> Account Details</h2>
               <p>
                 Your Account :
-                <span className='text-success acc'>{this.state.account}</span>
+                <span className='text-info acc'> {this.state.account}</span>
               </p>
               <p>
-                Network :{' '}
-                <span className='text-success'>
-                  {' '}
-                  {this.state.netw.toUpperCase()}{' '}
-                </span>{' '}
+                Account Balance :
+                <span className='text-info acc'> {this.state.balance} ETH</span>
+              </p>
+              <p>
+                Network :
+                <span className='text-info'>
+                  {this.state.netw.toUpperCase()}
+                </span>
               </p>
               <p>Network Id : {this.state.netwId}</p>
               <p>Total Task : {this.state.countTask}</p>
@@ -133,9 +155,9 @@ class App extends Component {
             <div className='col-lg-6 col-md-6 col-sm-12 col-12'>
               {this.state.loading ? (
                 <div id='loader' className='text-center'>
-                  <p className='text-center text-danger font-weight-bold'>
+                  <h1 className='text-center text-danger font-weight-bold'>
                     Loading...
-                  </p>
+                  </h1>
                 </div>
               ) : (
                 <TodoList
@@ -147,6 +169,8 @@ class App extends Component {
             </div>
           </div>
         </div>
+
+        <Footer />
       </div>
     );
   }
